@@ -9,6 +9,24 @@
 - prevent against common NTLM + kerbeorsting attacks 
 - look in AD security.org
 - Disable old protocols (like SMB1)
+
+from chat: 
+
+Rotate-DomainPasswords.ps1
+Get-ActiveSessions.ps1
+Get-ListeningPorts.ps1
+Kill-SuspiciousScheduledTasks.ps1
+Disable-Delegation.ps1
+
+Lock-RDP.ps1
+
+Firewall-EgressBlock.ps1
+
+Disable-SMB1.ps1
+
+Get-ADAdminChanges.ps1
+
+Emergency-HostIsolation.ps1
 #>
 
 Import-Module ActiveDirectory 
@@ -20,11 +38,14 @@ function Enumerate-AD {
     # Get all domains in forest + thier child domains (so basically Get all domain trees) 
 
 
+
     # Get OUs 
     # added that are not the default OUs 
 
     # Get GPOs -> applied to which OUs? 
     # added that are not the default GPOs 
+    # remove "DomainName" if there is only one domain name 
+    Get-GPO -All | Select-Object DisplayName, DomainName, GpoStatus, Description  
 }
 
 
