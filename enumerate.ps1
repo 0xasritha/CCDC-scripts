@@ -78,7 +78,7 @@ $Servers = Get-ADComputer -Filter 'OperatingSystem -Like "*Windows Server*"' | S
 
 # Then loop through and get shares
 foreach ($Server in $Servers) {
-    Write-Host "Shares on $Server:"
+    Write-Host "Shares on $Server"
     Get-SmbShare -ComputerName $Server
 }
 
