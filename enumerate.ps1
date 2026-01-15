@@ -51,24 +51,16 @@ function Enumerate-AD {
 Import-Module GroupPolicy
 Import-Module ActiveDirectory
 
-$gpos = Get-GPO -All
-$report = @()
+Get-GPO -All | ForEach-Object {
+    $gpo = $_
+    [xml]$report = Get-GPOReport -Guid $gpo.Id -ReportType Xml
 
-foreach ($gpo in $gpos) {
-    # Generate an XML report for the current GPO to easily access link information
-    [xml]$gpoReport = Get-GPOReport -Guid $gpo.Id -ReportType Xml
-
-    # Iterate through all links in the XML report
-    foreach ($link in $gpoReport.GPO.LinksTo.SOMPath) {
-        $report += [pscustomobject]@{
-            "GPO Name"       = $gpo.DisplayName
-            "GPO ID"         = $gpo.Id
-            "Linked OU/Path" = $link
+    if ($report.GPO.LinksTo) {
+        foreach ($ou in $report.GPO.LinksTo.SOMPath) {
+            Write-Host "GPO '$($gpo.DisplayName)' is linked to OU '$ou'"
         }
     }
 }
-
-$report | Format-Table -AutoSize
 
 
 
