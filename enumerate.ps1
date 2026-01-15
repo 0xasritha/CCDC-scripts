@@ -1,5 +1,8 @@
 # TODO: make this into a Git Repo 
 
+# TODO: do all the things that Jeremey said that got him all of it 
+# TODO: look at the Northeastern CCDC scripts 
+
 <# 
 - TODO: test password changing script as well
 - TODO:
@@ -73,15 +76,23 @@ Get-GPO -All | ForEach-Object {
 
 
 # ----------------------- SMB Shares
+
+<#
+SMB Shares are shared network folders (accessed via SMB protocol); let users or groups shared resources like files, directories, printers across domain. AD authenticates users
+#>
 # First get all server names (this is an example, adjust OU or filters as needed)
 $Servers = Get-ADComputer -Filter 'OperatingSystem -Like "*Windows Server*"' | Select-Object -ExpandProperty Name
 
 # Then loop through and get shares
 foreach ($Server in $Servers) {
     Write-Host "Shares on $Server"
-    Get-SmbShare -ComputerName $Server
+    Get-SmbShare -CimSession $Server
 }
 
 <#
-
+SMB Hardening Ideas: 
+- Disable SMBv1 
+- Enable SMB Envryption 
+- Force Kerberos 
+- SMB Signing? (Enforced via GPOs)
 #>
