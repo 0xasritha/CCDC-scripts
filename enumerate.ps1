@@ -48,6 +48,10 @@ function Enumerate-AD {
     Get-GPO -All | Select-Object DisplayName, DomainName, GpoStatus, Description  
 }
 
+Enumerate-AD
+
+# ----------------------- GPOs 
+# Figure out what GPOs are linked with what OUs 
 Import-Module GroupPolicy
 Import-Module ActiveDirectory
 
@@ -57,6 +61,10 @@ Get-GPO -All | ForEach-Object {
 
     if ($report.GPO.LinksTo) {
         foreach ($ou in $report.GPO.LinksTo.SOMPath) {
+            # WHICH ONES ARE THE DEFAULT ONES
+            # - "Default Domain Policy" - linked to domain, applies to Authenticated Users 
+            # - "Default Domain Controllers Policy": links to OU of domain controllers 
+            # DID THE DEFAULT ONES HAVE THEIR SETTINGS CHANGED?
             Write-Host "GPO '$($gpo.DisplayName)' is linked to OU '$ou'"
         }
     }
@@ -64,5 +72,16 @@ Get-GPO -All | ForEach-Object {
 
 
 
-# -----------------------------------------
-Enumerate-AD
+# ----------------------- SMB Shares
+# First get all server names (this is an example, adjust OU or filters as needed)
+$Servers = Get-ADComputer -Filter 'OperatingSystem -Like "*Windows Server*"' | Select-Object -ExpandProperty Name
+
+# Then loop through and get shares
+foreach ($Server in $Servers) {
+    Write-Host "Shares on $Server:"
+    Get-SmbShare -ComputerName $Server
+}
+
+<#
+
+#>
