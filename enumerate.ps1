@@ -48,6 +48,28 @@ function Enumerate-AD {
     Get-GPO -All | Select-Object DisplayName, DomainName, GpoStatus, Description  
 }
 
+Import-Module GroupPolicy
+Import-Module ActiveDirectory
+
+$gpos = Get-GPO -All
+$report = @()
+
+foreach ($gpo in $gpos) {
+    # Generate an XML report for the current GPO to easily access link information
+    [xml]$gpoReport = Get-GPOReport -Guid $gpo.Id -ReportType Xml
+
+    # Iterate through all links in the XML report
+    foreach ($link in $gpoReport.GPO.LinksTo.SOMPath) {
+        $report += [pscustomobject]@{
+            "GPO Name"       = $gpo.DisplayName
+            "GPO ID"         = $gpo.Id
+            "Linked OU/Path" = $link
+        }
+    }
+}
+
+$report | Format-Table -AutoSize
+
 
 
 # -----------------------------------------
